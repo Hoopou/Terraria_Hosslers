@@ -29,13 +29,13 @@ namespace Hosslers.Items
 	/// </summary>
 	public class Hossler : ModItem
 	{
-
-        public override string Texture => base.Texture + "/Items/Hossler.png";
+		
+        public override string Texture => Mod.Name + "/Items/BasicHossler";
         public override void SetStaticDefaults()
 		{
 			// DisplayName.SetDefault("BasicItem"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
 
-			Tooltip.SetDefault("This is a basic modded sword.");
+			Tooltip.SetDefault("This is a basic Hossler.");
 		}
 
 		public override void SetDefaults()
