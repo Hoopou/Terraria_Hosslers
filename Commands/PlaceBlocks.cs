@@ -25,7 +25,7 @@ namespace Hosslers.Commands
         {
             if (args.Length <= 0 ) WriteError("invalid args");
 
-            int blockId = 1;
+            int tileType = 1;
             int typeId = 0;
             int length = 0;
 
@@ -48,7 +48,7 @@ namespace Hosslers.Commands
             {
                 try
                 {
-                    blockId = int.Parse(args[0]);
+                    tileType = int.Parse(args[0]);
                     length = int.Parse(args[1]);
                 }
                 catch (Exception)
@@ -62,7 +62,7 @@ namespace Hosslers.Commands
             {
                 try
                 {
-                    blockId = int.Parse(args[0]);
+                    tileType = int.Parse(args[0]);
                     typeId = int.Parse(args[1]);
                     length = int.Parse(args[2]);
                 }
@@ -83,17 +83,18 @@ namespace Hosslers.Commands
                 endPosition = tempStart;
             }
 
-
-            Settings.Talk("Placing " + length + " blocks of " + blockId + " with type " + typeId + " from x:" + startPosition + "  ; to  x:"+ endPosition);
+            Settings.Talk("Placing " + length + " blocks of " + tileType + " with type " + typeId + " from x:" + startPosition + "  ; to  x:"+ endPosition);
             for(int i = startPosition; i < endPosition; i++)
             {
                 if (args.Length <= 2)
                 {
-                    WorldGen.PlaceTile(i, caller.Player.Center.ToTileCoordinates().Y, blockId, false, true);
+                   
+                    WorldGen.PlaceTile(i, caller.Player.Center.ToTileCoordinates().Y, TileID.Grass, false, true);
+                    
                 }
                 else
                 {
-                    WorldGen.PlaceTile(i, caller.Player.Center.ToTileCoordinates().Y, blockId, false, true,style: typeId);
+                    WorldGen.PlaceTile(i, caller.Player.Center.ToTileCoordinates().Y, tileType, false, true,style: typeId);                    
                 }
             }
             

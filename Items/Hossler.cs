@@ -1,7 +1,11 @@
+using Hosslers.Converters;
 using Hosslers.Shared;
 using IL.Terraria.Localization;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -102,8 +106,58 @@ namespace Hosslers.Items
 
 				//Settings.Talk("Block info: " + Player.tileTargetX + "," + Player.tileTargetY + " : " + TargetTile.ToString() + "  / Angle (" + angle.X + " ; " + angle.Y + ")" + " " + (isTop ? "Top-":"Bottom-")+(isRigth?"Rigth":"Left") + " " + WorldGen.CheckTileBreakability(Player.tileTargetX, Player.tileTargetY));
 				if (Settings.Mode == ToolMode.Dev)
-				{	
-					Settings.Talk("Block info: " + "Tyle type:" + TargetTile.TileType);
+				{
+					//Settings.Talk("Block info: " + "Tyle type:" + TargetTile.TileType);
+
+					var sb = new StringBuilder();
+
+					foreach(var attr in TargetTile.GetType().GetProperties())
+                    {
+						try
+						{
+							sb.Append(attr.Name + " : " + attr.GetValue(TargetTile) + "\n");
+						}
+						catch (Exception ez) 
+						{
+							sb.Append(attr.Name +"("+attr.PropertyType.Name+ ") : UNDEFINED " + "\n");
+						}
+                    }
+					sb.Append("\n==================================\n");
+
+					foreach (var attr in TargetTile.GetType().GetFields())
+					{
+						try
+						{
+							sb.Append(attr.Name + " : " + attr.GetValue(TargetTile) + "\n");
+						}
+						catch (Exception ez)
+						{
+							sb.Append(attr.Name + "(" + attr.DeclaringType+ ") : UNDEFINED " + "\n");
+						}
+					}
+
+					sb.Append("\n==================================\n");
+
+					foreach (var attr in TargetTile.GetType().GetMembers())
+					{
+						try
+						{
+							sb.Append(attr.Name + " : " + attr.MemberType + "\n");
+						}
+						catch (Exception ez)
+						{
+							sb.Append(attr.Name + "(" + attr.DeclaringType + ") : UNDEFINED " + "\n");
+						}
+					}
+
+					Settings.LogInfo(sb.ToString());
+
+
+					TargetTile.TileType = TileID.Grass;
+					TargetTile.TileFrameX = 54;
+					TargetTile.TileFrameNumber = 2;
+
+
 					return;
 				}
 				
@@ -154,6 +208,9 @@ namespace Hosslers.Items
 
 			//base.UseStyle(player, heldItemFrame);
 		}
+
+
+
 
 		public override void AddRecipes()
 		{
