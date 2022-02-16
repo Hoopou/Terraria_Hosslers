@@ -1,4 +1,3 @@
-using Hosslers.Converters;
 using Hosslers.Shared;
 using IL.Terraria.Localization;
 using Microsoft.Xna.Framework;
@@ -151,11 +150,13 @@ namespace Hosslers.Items
 					}
 
 					Settings.LogInfo(sb.ToString());
+					//WorldGen.TileRunner((int)wc.X, (int)wc.Y, 1, 1, TileID.Dirt,true,overRide:true);
+					//WorldGen.TileRunner(tc.X, tc.Y, 1, 1, TileID.Dirt,true,overRide:true);
+					//WorldGen.TileRunner(X, Y, 10, Main.rand.Next(16, 16), TileType, true, 0f, 0f, true, true);
 
-
-					TargetTile.TileType = TileID.Grass;
-					TargetTile.TileFrameX = 54;
-					TargetTile.TileFrameNumber = 2;
+					//TargetTile.TileType = TileID.Grass;
+					//TargetTile.TileFrameX = 54;
+					//TargetTile.TileFrameNumber = 2;
 
 
 					return;

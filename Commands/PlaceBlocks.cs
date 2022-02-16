@@ -88,8 +88,15 @@ namespace Hosslers.Commands
             {
                 if (args.Length <= 2)
                 {
-                   
-                    WorldGen.PlaceTile(i, caller.Player.Center.ToTileCoordinates().Y, TileID.Grass, false, true);
+                    if(TileID.Sets.Grass[tileType] && TileID.Sets.Conversion.MergesWithDirtInASpecialWay[tileType])
+                    {
+                        WorldGen.PlaceTile(i, caller.Player.Center.ToTileCoordinates().Y, TileID.Dirt, false, true);
+                        WorldGen.SpreadGrass(i, caller.Player.Center.ToTileCoordinates().Y, TileID.Dirt, tileType);
+                    }
+                    else
+                    {
+                        WorldGen.PlaceTile(i, caller.Player.Center.ToTileCoordinates().Y, tileType, false, true);
+                    }
                     
                 }
                 else
