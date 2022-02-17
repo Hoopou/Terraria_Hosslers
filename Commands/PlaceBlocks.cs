@@ -96,8 +96,7 @@ namespace Hosslers.Commands
                     else
                     {
                         WorldGen.PlaceTile(i, caller.Player.Center.ToTileCoordinates().Y, tileType, false, true);
-                    }
-                    
+                    }                    
                 }
                 else
                 {
