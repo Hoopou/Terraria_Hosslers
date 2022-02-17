@@ -9,6 +9,7 @@ using System.Text;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Hosslers.HosslerConfigServer;
 
 namespace Hosslers.Items
 {
@@ -46,10 +47,10 @@ namespace Hosslers.Items
         {
             Item.damage = 100;
             Item.DamageType = DamageClass.Generic;
-            Item.width = 40;
-            Item.height = 40;
+            Item.width = 5;
+            Item.height = 5;
             Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.useAnimation = 20;            
             Item.useStyle = ItemUseStyleID.Thrust;
             Item.knockBack = 6;
             Item.value = 10000;
@@ -70,6 +71,9 @@ namespace Hosslers.Items
             player.itemRotation = 0f;
             player.itemLocation.Y = player.Center.Y + 8;
             player.itemLocation.X = player.Center.X + 2 * player.direction;
+
+            player.itemWidth = 5;
+            player.itemHeight = 5;
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
@@ -125,59 +129,52 @@ namespace Hosslers.Items
         {
 
 
-            int radius = 2;
+            int radius = 3;
            
             var TargetTile = Main.tile[Player.tileTargetX, Player.tileTargetY];
-
+            var isWall = !TargetTile.HasTile;
             var swap = ModContent.GetInstance<HosslerConfigServer>().Configs.Swaps.FirstOrDefault(c => c.InitialTileId == TargetTile.TileType);
+
             if (swap == null) return;
-
-
-            var angle = new Vector2(player.Center.ToTileCoordinates().X, player.Center.ToTileCoordinates().Y).DirectionTo(new Vector2(Player.tileTargetX, Player.tileTargetY));
-            bool isTop = angle.Y < 0;//Player.tileTargetY - player.Center.ToTileCoordinates().Y > 0 ? false : true;
-            bool isRigth = angle.X >= 0;            
-
-            for (int y = Player.tileTargetY; (isTop ? (y > Player.tileTargetY - radius) : (y < Player.tileTargetY + radius)); y += (isTop ? -1 : 1))
-            {
-                Tile tile = Main.tile[Player.tileTargetX, y];
-
-                if (tile.TileType != swap.InitialTileId || WorldGen.CheckTileBreakability2_ShouldTileSurvive(Player.tileTargetX, y)) break;
-
-                if (TileID.Sets.Grass[swap.TargetTileId] && TileID.Sets.Conversion.MergesWithDirtInASpecialWay[swap.TargetTileId])
-                {
-                    WorldGen.PlaceTile(Player.tileTargetX, y, TileID.Dirt, false, true);
-                    WorldGen.SpreadGrass(Player.tileTargetX, y, TileID.Dirt, swap.TargetTileId);                    
-                }
-                else
-                {
-                    WorldGen.PlaceTile(Player.tileTargetX, y, swap.TargetTileId, false, true);
-                }
-
-            }
-            for (int x = (isRigth ? Player.tileTargetX + 1 : Player.tileTargetX - 1); (isRigth ? (x < Player.tileTargetX + radius) : (x > Player.tileTargetX - radius)); x += (isRigth ? 1 : -1))
-            {
-                Tile tile = Main.tile[x, Player.tileTargetY];
-
-                if (tile.TileType != swap.InitialTileId || WorldGen.CheckTileBreakability2_ShouldTileSurvive(x, Player.tileTargetY)) break;
-
-                if (TileID.Sets.Grass[swap.TargetTileId] && TileID.Sets.Conversion.MergesWithDirtInASpecialWay[swap.TargetTileId])
-                {
-                    WorldGen.PlaceTile(x, Player.tileTargetY, TileID.Dirt, false, true);
-                    WorldGen.SpreadGrass(x, Player.tileTargetY, TileID.Dirt, swap.TargetTileId);
-                }
-                else
-                {
-                    WorldGen.PlaceTile(x, Player.tileTargetY, swap.TargetTileId, false, true);
-                }
-            }
-
-            //this.Talk("Use Style: " + Player.tileTargetX + "," + Player.tileTargetY + "item time: " + player.itemTime + "(max: " + Item.useTime + ")");
+           
+            CrawlAndReplace(Player.tileTargetX, Player.tileTargetY, swap, radius, isWall);
+         
         }
+
+        private void CrawlAndReplace(int x,int y, BlockSwapConfig swap, int radius, bool isWall = false)
+        {
+            if (!isWall && (!Main.tile[x, y].HasTile || Main.tile[x, y].TileType != swap.InitialTileId)) return;
+
+            if(isWall && (Main.tile[x, y].WallType != swap.InitialTileId || Main.tile[x, y].WallType == 0)) return;
+            
+            if (radius <= 0) return;
+
+            BlockPlacer.ReplaceTile(x, y, (ushort)swap.TargetTileId);
+
+            radius--;
+
+            Crawler.CrawlTile(x, y, (ushort)swap.InitialTileId, out bool top, out bool right, out bool bottom, out bool left);
+
+            var tempradius = radius;
+            if (top) CrawlAndReplace(x, y - 1, swap, tempradius, isWall);
+            tempradius = radius;
+            if (right) CrawlAndReplace(x+1, y, swap, tempradius, isWall);
+            tempradius = radius;
+            if (bottom) CrawlAndReplace(x, y+1, swap, tempradius, isWall);
+            tempradius = radius;
+            if (left) CrawlAndReplace(x-1, y, swap, tempradius, isWall);
+
+        }
+
+
 
         public void OnUseToolWithDevMode(Player player, Rectangle heldItemFrame)
         {
             var TargetTile = Main.tile[Player.tileTargetX, Player.tileTargetY];
             var sb = new StringBuilder();
+
+            sb.AppendLine("TileTargetX : " + Player.tileTargetX);
+            sb.AppendLine("TileTargetY : " + Player.tileTargetY);
 
             foreach (var attr in TargetTile.GetType().GetProperties())
             {
