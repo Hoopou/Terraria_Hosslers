@@ -47,14 +47,14 @@ namespace Hosslers.Items
         {
             Item.damage = 100;
             Item.DamageType = DamageClass.Generic;
-            Item.width = 5;
-            Item.height = 5;
+            Item.width = 40;
+            Item.height = 40;
             Item.useTime = 20;
             Item.useAnimation = 20;            
-            Item.useStyle = ItemUseStyleID.Thrust;
+            Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6;
             Item.value = 10000;
-            Item.rare = 2;
+            Item.rare = ItemRarityID.White;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.holdStyle = ItemHoldStyleID.HoldFront;
@@ -68,19 +68,19 @@ namespace Hosslers.Items
         //}
         public override void HoldItemFrame(Player player)
         {
-            player.itemRotation = 0f;
+            //player.itemRotation = -90f * player.direction;
+            //player.itemLocation.Y = player.Center.Y + 40;
+            //player.itemLocation.X = player.Center.X + 25 * player.direction;
+            //player.itemRotation = 0f * player.direction;
             player.itemLocation.Y = player.Center.Y + 8;
             player.itemLocation.X = player.Center.X + 2 * player.direction;
-
-            player.itemWidth = 5;
-            player.itemHeight = 5;
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
+            int dust = Dust.NewDust(new Vector2(Player.tileTargetX, Player.tileTargetY), Item.width, Item.height, DustID.Grass, Scale: 0.3f);
             //if (Main.rand.NextBool(10))
             //{
-            int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.AncientLight);
             //Main.tile[hitbox.X, hitbox.Y].ToString()
             //this.Talk("Block info: "+ Player.tileTargetX + "," + Player.tileTargetY + "item time: " + Item.buffTime);
 
@@ -88,19 +88,17 @@ namespace Hosslers.Items
         }
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            //if (Main.rand.NextBool(10))
-            //{
-            int dust = Dust.NewDust(new Vector2(Player.tileTargetX, Player.tileTargetY), Item.width, Item.height, DustID.AncientLight);
-            //Main.tile[hitbox.X, hitbox.Y].ToString()
-
+            int dust = Dust.NewDust(new Vector2(Player.tileTargetX, Player.tileTargetY), Item.width, Item.height, DustID.Grass,Scale:1f);
             if (player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
             }
 
+            player.itemRotation += (180/20) * player.direction;
+
             if (player.itemTime == Item.useTime)
             {
-
+                //player.itemRotation = 0f;
 
 
 
@@ -115,11 +113,6 @@ namespace Hosslers.Items
                 }
 
                 OnUseTool(player, heldItemFrame);
-
-
-
-
-
 
                 //base.UseStyle(player, heldItemFrame);
             }
@@ -136,6 +129,8 @@ namespace Hosslers.Items
             var swap = ModContent.GetInstance<HosslerConfigServer>().Configs.Swaps.FirstOrDefault(c => c.InitialTileId == TargetTile.TileType);
 
             if (swap == null) return;
+
+            if(!player.IsInTileInteractionRange(Player.tileTargetX, Player.tileTargetY)) return;
            
             CrawlAndReplace(Player.tileTargetX, Player.tileTargetY, swap, radius, isWall);
          
