@@ -18,8 +18,8 @@ namespace Hosslers.Shared
 
         internal static void LogInfo(string info)
         {
-            var path = @"C:\Users\Vincent\Documents\My Games\Terraria\ModLoader\Beta\Mod Sources\Hosslers\bin\Logs.txt";
-            var TilesIdsPath = @"C:\Users\Vincent\Documents\My Games\Terraria\ModLoader\Beta\Mod Sources\Hosslers\bin\TileIDs.txt";
+            var path = @"C:\Users\Vincent\Documents\My Games\Terraria\tModLoader\ModSources\Hosslers\bin\Logs.txt";
+            var TilesIdsPath = @"C:\Users\Vincent\Documents\My Games\Terraria\tModLoader\ModSources\Hosslers\bin\TileIDs.txt";
 
             if (!File.Exists(TilesIdsPath))
             {
